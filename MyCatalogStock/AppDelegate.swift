@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +16,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        let config = Realm.Configuration(
+            // 新しいスキーマバージョンを設定します。 これは以前に使用されたものよりも大きくなければなりません
+            // version（以前にスキーマバージョンを設定していない場合、バージョンは0です）。
+            schemaVersion: 1,
+            
+            //スキーマのバージョンが上記のものよりも低い/を開くときに自動的に呼び出されるブロックを設定する
+            migrationBlock: { migration, oldSchemaVersion in
+                //まだ何も移行していないので、oldSchemaVersion == 0
+                if (oldSchemaVersion < 1) {
+                    // Realmは新しいプロパティと削除されたプロパティを自動的に検出します
+                    //そして自動的にディスク上のスキーマを更新する
+                }})
+        
+        Realm.Configuration.defaultConfiguration = config
+        
+        let realm = try! Realm()
+        print(realm, "Realm")
+        print(config,"Realm Version")
         return true
     }
 
